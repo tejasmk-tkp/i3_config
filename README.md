@@ -2,7 +2,7 @@
 
 A keyboard-centric, minimal, and efficient development environment — inspired by the EndeavourOS i3 setup, adapted for Ubuntu 22.04 LTS and Ubuntu 24.04 LTS.
 
-![i3 Setup Screenshot](images/i3-terminal-view.png)
+![i3 Setup Screenshot](i3-terminal-view.png)
 
 This setup is designed to provide a clean and productive workflow suitable for ROS, Python, and general Linux-based development, focusing on simplicity, speed, and modularity.
 
