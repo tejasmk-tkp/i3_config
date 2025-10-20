@@ -1,6 +1,8 @@
 # Ubuntu Development Environment Setup Guide
 
-A keyboard-centric, minimal, and efficient development environment inspired by the EndeavourOS i3 setup, adapted for Ubuntu 22.04 LTS and Ubuntu 24.04 LTS.
+A keyboard-centric, minimal, and efficient development environment — inspired by the EndeavourOS i3 setup, adapted for Ubuntu 22.04 LTS and Ubuntu 24.04 LTS.
+
+![i3 Setup Screenshot](images/i3-terminal-view.png)
 
 This setup is designed to provide a clean and productive workflow suitable for ROS, Python, and general Linux-based development, focusing on simplicity, speed, and modularity.
 
@@ -327,6 +329,15 @@ Save and exit (`Ctrl + O`, `Enter`, then `Ctrl + X`).
 ### 5.7: Restart i3
 
 After all configurations are complete, restart i3 by pressing `$mod + Shift + R` (usually `Super + Shift + R` or `Alt + Shift + R` depending on your mod key setting).
+
+### 5.8: View All Keybindings
+
+Once i3 is loaded, you can view all available keybindings and commands by pressing `$mod + Shift + H`. This will open a window displaying all configured keyboard shortcuts:
+
+- If your mod key is **Alt**: Press `Alt + Shift + H`
+- If your mod key is **Windows/Super**: Press `Win + Shift + H`
+
+This is a quick reference guide to help you navigate and use all the features of your i3 setup.
 
 ---
 
