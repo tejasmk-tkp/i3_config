@@ -1,0 +1,296 @@
+#!/bin/bash
+#
+# Use rofi to change display configuration using xrandr
+#
+# Copyright 2024 - Display management script for i3wm
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+#######################################################################
+#                            BEGIN CONFIG                             #
+#######################################################################
+
+# Colors: FG (foreground), BG (background), HL (highlighted)
+FG_COLOR="#bbbbbb"
+BG_COLOR="#111111"
+HLFG_COLOR="#111111"
+HLBG_COLOR="#bbbbbb"
+BORDER_COLOR="#222222"
+
+# Rofi options - you can customize the theme
+# ROFI_OPTIONS=(-theme ~/.config/rofi/display-profiles.rasi)
+# Alternative simple rofi options if you don't have a custom theme:
+# ROFI_OPTIONS=(-dmenu -i -p "Display Mode")
+
+# Zenity options
+ZENITY_TITLE="Display Profiles"
+ZENITY_TEXT="Select Display Mode:"
+ZENITY_OPTIONS=(--column= --hide-header)
+
+#######################################################################
+#                             END CONFIG                              #
+#######################################################################
+
+# Whether to ask for user's confirmation
+enable_confirmation=false
+
+# Preferred launcher if both are available
+preferred_launcher="rofi"
+
+usage="$(basename "$0") [-h] [-c] [-p name] -- display a menu for display configuration
+
+where:
+    -h  show this help text
+    -c  ask for user confirmation
+    -p  preferred launcher (rofi or zenity)
+
+This script depends on:
+  - xrandr,
+  - i3,
+  - rofi or zenity."
+
+# Check whether the user-defined launcher is valid
+launcher_list=(rofi zenity)
+function check_launcher() {
+  if [[ ! "${launcher_list[@]}" =~ (^|[[:space:]])"$1"($|[[:space:]]) ]]; then
+    echo "Supported launchers: ${launcher_list[*]}"
+    exit 1
+  else
+    # Get array with unique elements and preferred launcher first
+    i=1
+    launcher_list=($(for l in "$1" "${launcher_list[@]}"; do printf "%i %s\n" "$i" "$l"; let i+=1; done \
+      | sort -uk2 | sort -nk1 | cut -d' ' -f2- | tr '\n' ' '))
+  fi
+}
+
+# Parse CLI arguments
+while getopts "hcp:" option; do
+  case "${option}" in
+    h) echo "${usage}"
+       exit 0
+       ;;
+    c) enable_confirmation=true
+       ;;
+    p) preferred_launcher="${OPTARG}"
+       check_launcher "${preferred_launcher}"
+       ;;
+    *) exit 1
+       ;;
+  esac
+done
+
+# Check whether a command exists
+function command_exists() {
+  command -v "$1" &> /dev/null 2>&1
+}
+
+# xrandr and jq required
+if ! command_exists xrandr ; then
+  echo "xrandr is required but not installed."
+  exit 1
+fi
+
+if ! command_exists jq ; then
+  echo "jq is required but not installed. Install with: sudo apt install jq"
+  exit 1
+fi
+
+# Get connected displays
+function get_displays() {
+  xrandr --query | grep " connected" | cut -d' ' -f1
+}
+
+# Get primary display (usually laptop screen)
+function get_primary_display() {
+  xrandr --query | grep " connected primary" | cut -d' ' -f1
+  # If no primary found, get first connected display
+  if [[ -z $(xrandr --query | grep " connected primary") ]]; then
+    xrandr --query | grep " connected" | head -n1 | cut -d' ' -f1
+  fi
+}
+
+# Get secondary display(s)
+function get_secondary_displays() {
+  primary=$(get_primary_display)
+  xrandr --query | grep " connected" | cut -d' ' -f1 | grep -v "$primary"
+}
+
+# Detect displays
+displays=($(get_displays))
+primary_display=$(get_primary_display)
+secondary_displays=($(get_secondary_displays))
+
+# Only proceed if we have displays
+if [[ ${#displays[@]} -eq 0 ]]; then
+  echo "No displays detected!"
+  exit 1
+fi
+
+# Get the best resolution for a display
+function get_best_resolution() {
+  local display=$1
+  xrandr --query | grep -A 20 "^$display connected" | grep -E "^\s*[0-9]+x[0-9]+" | head -n1 | awk '{print $1}'
+}
+
+# Get common resolution for mirroring
+function get_mirror_resolution() {
+  local primary_res=$(get_best_resolution "$primary_display")
+  local secondary_res=$(get_best_resolution "${secondary_displays[0]}")
+  
+  # Extract width and height
+  local primary_w=$(echo $primary_res | cut -d'x' -f1)
+  local primary_h=$(echo $primary_res | cut -d'x' -f2)
+  local secondary_w=$(echo $secondary_res | cut -d'x' -f1)
+  local secondary_h=$(echo $secondary_res | cut -d'x' -f2)
+  
+  # Use the smaller resolution for mirroring
+  if [[ $primary_w -le $secondary_w && $primary_h -le $secondary_h ]]; then
+    echo $primary_res
+  else
+    echo $secondary_res
+  fi
+}
+
+# Reset i3 workspaces and move them to primary display
+function reset_workspaces() {
+  # Move all workspaces to primary display
+  for ws in $(i3-msg -t get_workspaces | jq -r '.[].name'); do
+    i3-msg "workspace $ws; move workspace to output $primary_display" > /dev/null 2>&1
+  done
+}
+
+# Apply display configuration and handle i3 workspace management
+function apply_display_config() {
+  local command="$1"
+  local mode="$2"
+  
+  # Execute the xrandr command
+  eval "$command"
+  
+  # Handle workspace management based on mode
+  case "$mode" in
+    "laptop_only"|"monitor_only")
+      # Reset workspaces to the active display
+      sleep 0.5  # Give xrandr time to apply
+      reset_workspaces
+      ;;
+    "extend")
+      # For extend mode, just let i3 handle it naturally
+      sleep 0.5
+      ;;
+    "mirror")
+      # For mirror mode, reset DPI and scaling
+      sleep 0.5
+      reset_workspaces
+      # Optional: reset DPI scaling
+      xrandr --dpi 96
+      ;;
+  esac
+}
+
+# Build xrandr commands based on available displays
+typeset -A display_commands
+
+if [[ ${#displays[@]} -eq 1 ]]; then
+  # Only one display connected
+  display_commands=(
+    [🖥️  Single Display]="xrandr --output $primary_display --auto|single"
+    [❌ Cancel]="|cancel"
+  )
+elif [[ ${#displays[@]} -eq 2 ]]; then
+  # Two displays - most common case
+  secondary=${secondary_displays[0]}
+  mirror_res=$(get_mirror_resolution)
+  
+  display_commands=(
+    [💻 Laptop Only]="xrandr --output $secondary --off --output $primary_display --auto|laptop_only"
+    [📺 Monitor Only]="xrandr --output $primary_display --off --output $secondary --auto|monitor_only"
+    [📱 Extend Display]="xrandr --output $primary_display --auto --output $secondary --auto --right-of $primary_display|extend"
+    [🔀 Mirror Display]="xrandr --output $primary_display --mode $mirror_res --output $secondary --mode $mirror_res --same-as $primary_display --scale 1x1|mirror"
+    [❌ Cancel]="|cancel"
+  )
+else
+  # Multiple displays - basic options
+  all_secondary=$(printf " --output %s --off" "${secondary_displays[@]}")
+  extend_cmd="xrandr --output $primary_display --auto"
+  for secondary in "${secondary_displays[@]}"; do
+    extend_cmd="$extend_cmd --output $secondary --auto --right-of $primary_display"
+  done
+  
+  display_commands=(
+    [💻 Primary Only]="xrandr --output $primary_display --auto$all_secondary|laptop_only"
+    [📱 Extend All]="$extend_cmd|extend"
+    [🔀 Mirror All]="xrandr --output $primary_display --auto$(printf " --output %s --auto --same-as $primary_display" "${secondary_displays[@]}")|mirror"
+    [❌ Cancel]="|cancel"
+  )
+fi
+
+menu_nrows=${#display_commands[@]}
+
+launcher_exe=""
+launcher_options=""
+rofi_colors=""
+
+function prepare_launcher() {
+  if [[ "$1" == "rofi" ]]; then
+    rofi_colors=(-bc "${BORDER_COLOR}" -bg "${BG_COLOR}" -fg "${FG_COLOR}" \
+        -hlfg "${HLFG_COLOR}" -hlbg "${HLBG_COLOR}")
+    launcher_exe="rofi"
+    launcher_options=(-dmenu -i -lines "${menu_nrows}" -p "Display Mode:" \
+        "${rofi_colors}" "${ROFI_OPTIONS[@]}")
+  elif [[ "$1" == "zenity" ]]; then
+    launcher_exe="zenity"
+    launcher_options=(--list --title="${ZENITY_TITLE}" --text="${ZENITY_TEXT}" \
+        "${ZENITY_OPTIONS[@]}")
+  fi
+}
+
+for l in "${launcher_list[@]}"; do
+  if command_exists "${l}" ; then
+    prepare_launcher "${l}"
+    break
+  fi
+done
+
+# No launcher available
+if [[ -z "${launcher_exe}" ]]; then
+  echo "No launcher (rofi/zenity) available!"
+  exit 1
+fi
+
+launcher=(${launcher_exe} "${launcher_options[@]}")
+selection="$(printf '%s\n' "${!display_commands[@]}" | sort | "${launcher[@]}")"
+
+function ask_confirmation() {
+  if [ "${launcher_exe}" == "rofi" ]; then
+    confirmed=$(echo -e "Yes\nNo" | rofi -dmenu -i -lines 2 -p "Apply ${selection}?" \
+      "${rofi_colors}" "${ROFI_OPTIONS[@]}")
+    [ "${confirmed}" == "Yes" ] && confirmed=0
+  elif [ "${launcher_exe}" == "zenity" ]; then
+    zenity --question --text "Apply ${selection,,}?"
+    confirmed=$?
+  fi
+
+  if [ "${confirmed}" == 0 ]; then
+    command_and_mode="${display_commands[${selection}]}"
+    command="${command_and_mode%|*}"
+    mode="${command_and_mode##*|}"
+    apply_display_config "$command" "$mode"
+  fi
+}
+
+if [[ $? -eq 0 && ! -z ${selection} ]]; then
+  if [[ "${enable_confirmation}" = true ]]; then
+    ask_confirmation
+  else
+    command_and_mode="${display_commands[${selection}]}"
+    command="${command_and_mode%|*}"
+    mode="${command_and_mode##*|}"
+    if [[ "$mode" != "cancel" && ! -z "$command" ]]; then
+      apply_display_config "$command" "$mode"
+    fi
+  fi
+fi

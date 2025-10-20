@@ -1,0 +1,54 @@
+#!/bin/bash
+
+Main() {
+    # Ubuntu-compatible version - removed EndeavourOS dependency
+    
+    local command=(
+        yad --title="i3-wm keybindings:" --no-buttons --width=700 --height=500 --center --list
+        --column=key: --column=description: --column=command: --column-width=150
+        "ESC" "close this app" ""
+        "=" "modkey (alt key)" "(set mod Mod4)"
+        "+Return" "start xfce4-terminal at cwd" ""
+        "+Shift+Return" "start xfce4-terminal at home" ""
+        "+q" "kill focused window" ""
+        "+d" "Application menu search by typing (fancy Rofi menu)" ""
+        "+t" "Window switcher menu (fancy Rofi menu)" ""
+        "+b" "fancy exit-menu on bottom right" ""
+        "+l" "Lock the system" ""
+        "+Shift+c" "reload the configuration file" ""
+        "+Shift+r" "restart i3 inplace (preserves your layout/session)" ""
+        "+Shift+h" "keybinding in fancy rofi (automated)" ""
+        "+Left" "focus left" ""
+        "+Down" "focus down" ""
+        "+Up" "focus up" ""
+        "+Right" "focus right" ""
+        "+Shift+Left" "move left" ""
+        "+Shift+Down" "move down" ""
+        "+Shift+Up" "move up" ""
+        "+Shift+Right" "move right" ""
+        "+h" "split in horizontal orientation" ""
+        "+v" "split in vertical orientation" ""
+        "+f" "enter fullscreen mode for the focused container" ""
+        "+s" "layout stacking" ""
+        "+g" "layout tabbed" ""
+        "+e" "layout toggle split" ""
+        "+Shift+space" "toggle tiling / floating" ""
+        "+space" "change focus between tiling / floating windows" ""
+        "+a" "focus the parent container" ""
+        "+d" "focus child container" ""
+        "+right mouse" "resize floating window" ""
+        "+p" "Redirect sound to headphones" ""
+        "+o" "starts App Menu" ""
+        "Button" "screenshot" ""
+        "+Shift+p" "change power profile" ""
+        "+Tab" "switch/iterate between workspaces (next)" ""
+        "+Shift+Tab" "switch/iterate between workspaces (prev)" ""
+        "+n" "open new empty workspace" ""
+        "+c" "clipboard manager" ""
+        "+Shift+d" "display options" ""
+    )
+
+    "${command[@]}"
+}
+
+Main "$@"
