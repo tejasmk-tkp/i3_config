@@ -1,0 +1,119 @@
+@import "~/.config/rofi/colors/mocha.rasi"
+
+* {
+    background: @base;
+    background-color: @base;
+    foreground: @text;
+    border-color: transparent;
+
+    selected-background: @surface1;
+    selected-foreground: @text;
+    normal-background: @base;
+    normal-foreground: @text;
+    alternate-background: @mantle;
+    alternate-foreground: @text;
+    spacing: 2px;
+    border: 0px;
+}
+
+window {
+    transparency: "real";
+    location: center;
+    anchor: center;
+    width: 60%;
+    border: 0px;
+    border-radius: 12px;
+    padding: 20px;
+    background-color: @base;
+}
+
+mainbox {
+    border: 0;
+    padding: 0px;
+    background-color: transparent;
+}
+
+inputbar {
+    padding: 12px;
+    margin: 0px 0px 15px 0px;
+    background-color: @mantle;
+    text-color: @text;
+    border-radius: 6px;
+    children: [ prompt, entry ];
+}
+
+prompt {
+    background-color: transparent;
+    text-color: @text;
+    padding: 0px 10px 0px 0px;
+}
+
+entry {
+    background-color: transparent;
+    text-color: @text;
+    placeholder-color: @overlay1;
+    padding: 0px;
+    border: 0px;
+    border-radius: 0px;
+}
+
+listview {
+    padding: 5px;
+    columns: 4;
+    lines: 4;
+    background-color: transparent;
+    fixed-height: false;
+    scrollbar: false;
+    spacing: 10px;
+}
+
+element {
+    padding: 20px;
+    border: 0;
+    border-radius: 8px;
+    background-color: transparent;
+    text-color: @text;
+    orientation: vertical;
+}
+
+element normal.normal {
+    background-color: transparent;
+    text-color: @text;
+}
+
+element alternate.normal {
+    background-color: transparent;
+    text-color: @text;
+}
+
+element selected.normal {
+    background-color: @surface1;
+    text-color: @text;
+}
+
+element-text {
+    background-color: transparent;
+    text-color: inherit;
+    horizontal-align: 0.5;
+    vertical-align: 0.5;
+}
+
+element-icon {
+    background-color: transparent;
+    size: 48px;
+    horizontal-align: 0.5;
+    vertical-align: 0.5;
+    margin: 0px 0px 8px 0px;
+}
+
+textbox {
+    text-color: @text;
+    background-color: transparent;
+}
+
+message {
+    padding: 10px;
+    background-color: @mantle;
+    text-color: @text;
+    border-radius: 6px;
+}

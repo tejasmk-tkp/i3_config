@@ -39,7 +39,7 @@ HLBG_COLOR="#bbbbbb"
 BORDER_COLOR="#222222"
 
 # Options not related to colors (most rofi options do not work anymore)
-ROFI_OPTIONS=(-theme ~/.config/rofi/powermenu.rasi)
+ROFI_OPTIONS=(-theme ~/.config/rofi/catppuccin-mocha-list.rasi)
 # Zenity options
 ZENITY_TITLE="Power Menu"
 ZENITY_TEXT="Action:"
@@ -164,7 +164,7 @@ selection="$(printf '%s\n' "${!menu[@]}" | sort | "${launcher[@]}")"
 function ask_confirmation() {
   if [ "${launcher_exe}" == "rofi" ]; then
     confirmed=$(echo -e "Yes\nNo" | rofi -dmenu -i -lines 2 -p "${selection}?" \
-      "${rofi_colors}" "${ROFI_OPTIONS[@]}")
+        -theme ~/.config/rofi/catppuccin-mocha-list.rasi)
     [ "${confirmed}" == "Yes" ] && confirmed=0
   elif [ "${launcher_exe}" == "zenity" ]; then
     zenity --question --text "Are you sure you want to ${selection,,}?"
