@@ -19,9 +19,9 @@ This setup is designed to provide a clean and productive workflow suitable for R
 
 ## Prerequisites
 
-Ensure you have Ubuntu 22.04 LTS or Ubuntu 24.04 LTS installed on your system.
+Ensure you have Ubuntu 24.04+ installed on your system.
 
-**Important Note for Ubuntu 22.04 LTS Users:** The standard `apt` repository does not include `i3-gaps`. You will need to add the community repository during the i3 installation step (see Step 5.1 for instructions).
+> **_Note:_** This setup has only been tested on Ubuntu 24.04. Compatibility with other versions may vary.
 
 ---
 
@@ -162,7 +162,7 @@ Save with `Ctrl + O`, then `Enter`. Exit with `Ctrl + X`.
 sudo apt install i3 blueman yad xcwd i3blocks xfce4-terminal thunar picom dunst variety rofi brightnessctl power-profiles-daemon slick-greeter imagemagick lightdm acpi arandr xdg-utils dex dmenu feh galculator gvfs gvfs-backends i3lock i3status jq mpv numlockx network-manager-gnome playerctl policykit-1-gnome scrot sysstat thunar-archive-plugin thunar-volman tumbler unzip xarchiver xbindkeys xdg-user-dirs-gtk xss-lock zip pulseaudio-utils
 ```
 
-**_Note_**: The quick launch bar is configured for WhatsApp, Google Chrome, Discord, and Thunar. Install the ones you want, or edit the i3 config to swap them out.
+> **_Note_**: The quick launch bar is configured for WhatsApp, Google Chrome, Discord, and Thunar. Install the ones you want, or edit the i3 config to swap them out.
 
 ### 5.2: Install Font Awesome 6
 
