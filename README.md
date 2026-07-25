@@ -10,9 +10,8 @@ This setup is designed to provide a clean and productive workflow suitable for R
 
 - Window Manager: i3 — lightweight, fast, and keyboard-driven
 - Shell Environment: Zsh with Oh-My-Zsh and useful plugins
-- Editor: Neovim configured for development productivity
 - Clipboard Manager: Greenclip integration with Rofi
-- Aesthetic Add-ons: Variety, Dunst, Picom, and Arc Theme
+- Aesthetic Add-ons: Variety, Dunst, Picom, and Slick-greeter
 - Optimized for Developers: Python, Git, Docker, Virtualenv, and more preconfigured
 - Custom Scripts and Configs: Easily reproducible setup via GitHub configs
 
