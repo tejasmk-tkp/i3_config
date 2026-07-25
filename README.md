@@ -1,6 +1,6 @@
 # Ubuntu Development Environment Setup Guide
 
-A keyboard-centric, minimal, and efficient development environment — inspired by the EndeavourOS i3 setup, adapted for Ubuntu 22.04 LTS and Ubuntu 24.04 LTS.
+A keyboard-centric, minimal, and efficient development environment inspired by the EndeavourOS i3 setup, adapted for Ubuntu 24.04 LTS.
 
 ![i3 Setup Screenshot](i3-terminal-view.png)
 
