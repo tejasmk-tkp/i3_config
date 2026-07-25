@@ -8,13 +8,13 @@ This setup is designed to provide a clean and productive workflow suitable for R
 
 ## Features Overview
 
-* Window Manager: i3 — lightweight, fast, and keyboard-driven
-* Shell Environment: Zsh with Oh-My-Zsh and useful plugins
-* Editor: Neovim configured for development productivity
-* Clipboard Manager: Greenclip integration with Rofi
-* Aesthetic Add-ons: Variety, Dunst, Picom, and Arc Theme
-* Optimized for Developers: Python, Git, Docker, Virtualenv, and more preconfigured
-* Custom Scripts and Configs: Easily reproducible setup via GitHub configs
+- Window Manager: i3 — lightweight, fast, and keyboard-driven
+- Shell Environment: Zsh with Oh-My-Zsh and useful plugins
+- Editor: Neovim configured for development productivity
+- Clipboard Manager: Greenclip integration with Rofi
+- Aesthetic Add-ons: Variety, Dunst, Picom, and Arc Theme
+- Optimized for Developers: Python, Git, Docker, Virtualenv, and more preconfigured
+- Custom Scripts and Configs: Easily reproducible setup via GitHub configs
 
 ---
 
@@ -117,7 +117,7 @@ ZSH_THEME="your-selected-theme"
 Add the following to your configuration file:
 
 ```bash
-plugins=(git zsh-autosuggestions zsh-syntax-highlighting zsh-navigation-tools extract arduino-cli python fzf thefuck web-search virtualenv vscode docker docker-compose)
+plugins=(git zsh-autosuggestions zsh-syntax-highlighting zsh-navigation-tools extract fzf thefuck web-search virtualenv)
 
 # Auto-activate venv if in folder tree
 function auto_venv_enter() {
@@ -153,96 +153,41 @@ Save with `Ctrl + O`, then `Enter`. Exit with `Ctrl + X`.
 
 ---
 
-## Step 4: Install and Setup Neovim
-
-### 4.1: Install Dependencies
-
-Install the following required packages:
-
-```bash
-sudo apt install ripgrep lynx gh nodejs npm python3-pip xclip xsel clang cmake clang-format ninja-build codespell
-```
-
-Install Python Neovim binding:
-
-```bash
-python3 -m pip install pynvim
-```
-
-### 4.2: Download and Install Neovim
-
-```bash
-curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
-sudo rm -rf /opt/nvim-linux-x86_64
-sudo tar -C /opt -xzf nvim-linux-x86_64.tar.gz
-```
-
-### 4.3: Add Neovim to PATH
-
-Edit your Zsh configuration:
-
-```bash
-nano ~/.zshrc
-```
-
-Add this line at the end:
-
-```bash
-export PATH="$PATH:/opt/nvim-linux-x86_64/bin"
-```
-
-Save and exit (`Ctrl + O`, `Enter`, then `Ctrl + X`). Reload your shell:
-
-```bash
-source ~/.zshrc
-```
-
-### 4.4: Setup Neovim Configuration
-
-```bash
-cd ~/.config
-git clone https://github.com/tejasmk-tkp/nvim_config.git
-mv nvim_config nvim
-cd nvim
-nvim init.lua
-```
-
-Wait for Neovim to automatically install all plugins. Once complete, run:
-
-```bash
-nvim +checkhealth
-```
-
-Review any reported issues and address them as needed.
-
----
-
 ## Step 5: Install and Setup i3 Window Manager
 
 ### 5.1: Install i3 and Dependencies
 
-**For Ubuntu 24.04 LTS:**
+**For Ubuntu 24.04+:**
 
 ```bash
-sudo apt install i3 blueman yad xcwd i3blocks xfce4-terminal thunar picom dunst variety rofi brightnessctl power-profiles-daemon slick-greeter imagemagick lightdm acpi arandr arc-theme xdg-utils fonts-hack-ttf fonts-firacode dex dmenu feh galculator gvfs gvfs-backends i3-wm i3lock i3status jq mpv numlockx network-manager-gnome playerctl policykit-1-gnome scrot sysstat thunar-archive-plugin thunar-volman tumbler unzip xarchiver xbindkeys xdg-user-dirs-gtk xbacklight xss-lock zip fonts-font-awesome pulseaudio-utils
+sudo apt install i3 blueman yad xcwd i3blocks xfce4-terminal thunar picom dunst variety rofi brightnessctl power-profiles-daemon slick-greeter imagemagick lightdm acpi arandr xdg-utils dex dmenu feh galculator gvfs gvfs-backends i3lock i3status jq mpv numlockx network-manager-gnome playerctl policykit-1-gnome scrot sysstat thunar-archive-plugin thunar-volman tumbler unzip xarchiver xbindkeys xdg-user-dirs-gtk xss-lock zip pulseaudio-utils
 ```
 
-**For Ubuntu 22.04 LTS:**
+**_Note_**: The quick launch bar is configured for WhatsApp, Google Chrome, Discord, and Thunar. Install the ones you want, or edit the i3 config to swap them out.
 
-First, add the community repository to access `i3-gaps`:
+### 5.2: Install Font Awesome 6
+
+Install Font Awesome 6 for brand icons:
 
 ```bash
-sudo add-apt-repository ppa:regolith-linux/stable
-sudo apt update
+wget https://use.fontawesome.com/releases/v6.5.2/fontawesome-free-6.5.2-desktop.zip
+unzip fontawesome-free-6.5.2-desktop.zip
+mkdir -p ~/.local/share/fonts
+cp fontawesome-free-6.5.2-desktop/otfs/*.otf ~/.local/share/fonts/
+fc-cache -fv
 ```
 
-Then install i3-gaps and all dependencies:
+Verify the fonts are detected:
 
 ```bash
-sudo apt install i3-gaps blueman yad xcwd i3blocks xfce4-terminal thunar picom dunst variety rofi brightnessctl power-profiles-daemon slick-greeter imagemagick lightdm acpi arandr arc-theme xdg-utils fonts-hack-ttf fonts-firacode dex dmenu feh galculator gvfs gvfs-backends i3lock i3status jq mpv numlockx network-manager-gnome playerctl policykit-1-gnome scrot sysstat thunar-archive-plugin thunar-volman tumbler unzip xarchiver xbindkeys xdg-user-dirs-gtk xbacklight xss-lock zip fonts-font-awesome pulseaudio-utils
+fc-list | grep -i "awesome"
 ```
 
-### 5.2: Setup Greenclip for Rofi
+You should see entries for `Font Awesome 6 Free`, `Font Awesome 6 Brands`, and `Font Awesome 6 Free Solid`.
+
+---
+
+### 5.3: Setup Greenclip for Rofi
 
 Download and configure Greenclip clipboard manager:
 
@@ -274,14 +219,6 @@ Start Greenclip daemon in the background:
 
 ```bash
 greenclip daemon &
-```
-
-### 5.3: Configure Rofi with Greenclip
-
-Edit your i3 configuration file (usually located at `~/.config/i3/config`) and add or replace the clipboard binding:
-
-```bash
-bindsym $mod+c exec --no-startup-id rofi -modi "clipboard:~/.local/bin/greenclip print" -show clipboard -run-command '{cmd}'
 ```
 
 ### 5.4: Configure Brightness Control
@@ -326,11 +263,11 @@ set $mod Mod4
 
 Save and exit (`Ctrl + O`, `Enter`, then `Ctrl + X`).
 
-### 5.7: Restart i3
+### 5.8: Restart system
 
-After all configurations are complete, restart i3 by pressing `$mod + Shift + R` (usually `Super + Shift + R` or `Alt + Shift + R` depending on your mod key setting).
+After all configurations are complete, restart and log in by selecting i3 as your window manager.
 
-### 5.8: View All Keybindings
+### 5.9: View All Keybindings
 
 Once i3 is loaded, you can view all available keybindings and commands by pressing `$mod + Shift + H`. This will open a window displaying all configured keyboard shortcuts:
 
@@ -343,11 +280,10 @@ This is a quick reference guide to help you navigate and use all the features of
 
 ## Completion
 
-Your Ubuntu development environment is now fully configured with Zsh, Neovim, and the i3 window manager. Enjoy your enhanced terminal experience and productivity!
+Your Ubuntu development environment is now fully configured with Zsh and the i3 window manager. Enjoy your enhanced terminal experience and productivity!
 
 For troubleshooting or additional customization, refer to the official documentation for each tool:
 
 - [Zsh Documentation](http://zsh.sourceforge.net/Doc/)
 - [Oh-My-Zsh GitHub](https://github.com/ohmyzsh/ohmyzsh)
-- [Neovim Documentation](https://neovim.io/doc/)
 - [i3 Documentation](https://i3wm.org/docs/)
